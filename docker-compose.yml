@@ -1,0 +1,23 @@
+version: '3'
+services:
+  tarantool:
+    image: tarantool/tarantool:2
+    ports:
+      - "3301:3301"
+    volumes:
+      - ./tarantool_init.lua:/opt/tarantool/init.lua
+    command: ["tarantool", "/opt/tarantool/init.lua"]
+    environment:
+      - TARANTOOL_USER_NAME=admin
+      - TARANTOOL_USER_PASSWORD=secret
+  
+  pollbot:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - TARANTOOL_URI=tarantool:3301
+      - TARANTOOL_USER=admin
+      - TARANTOOL_PASSWORD=secret
+    depends_on:
+      - tarantool
